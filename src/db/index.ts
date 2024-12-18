@@ -13,6 +13,6 @@ if (!DB_PATH) {
 }
 
 const sqlite = new Database(path.join(__dirname, DB_PATH));
-export const db = drizzle({ client: sqlite, schema });
+const db = drizzle({ client: sqlite, schema, logger: true });
 
 export default db;

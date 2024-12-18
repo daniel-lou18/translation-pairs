@@ -5,3 +5,4 @@ dist/
 
 src/db/migrations/
 *.db
+*.xlsx

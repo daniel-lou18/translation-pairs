@@ -1,8 +1,12 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const usersTable = sqliteTable("users_table", {
-  id: int().primaryKey({ autoIncrement: true }),
-  name: text().notNull(),
-  age: int().notNull(),
-  email: text().notNull().unique(),
+export const translationPairs = sqliteTable("translation_pairs", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  sourceText: text("source_text").notNull(),
+  targetText: text("target_text").notNull(),
+  sourceLang: text("source_lang").notNull(),
+  targetLang: text("target_lang").notNull(),
+  domain: text("domain"),
+  subdomain: text("subdomain"),
+  docType: text("doc_type"),
 });

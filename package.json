@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "ts-node -r tsconfig-paths/register src/db/migrate.ts",
+    "db:seed": "ts-node -r tsconfig-paths/register src/db/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,11 +23,13 @@
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"
   },
   "dependencies": {
     "better-sqlite3": "^11.7.0",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.38.2"
+    "drizzle-orm": "^0.38.2",
+    "xlsx": "^0.18.5"
   }
 }
