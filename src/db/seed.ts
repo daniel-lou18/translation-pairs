@@ -2,16 +2,7 @@ import database from "@/db";
 import { translationPairs } from "./schema";
 import XLSX from "xlsx";
 import path from "path";
-
-type TranslationPair = {
-  sourceText: string;
-  targetText: string;
-  sourceLang: string;
-  targetLang: string;
-  domain?: string;
-  subdomain?: string;
-  docType?: string;
-};
+import { TranslationPair } from "@/interfaces";
 
 function readFile() {
   const filePath = path.resolve(__dirname, "data", "translation_pairs.xlsx");
