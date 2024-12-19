@@ -9,3 +9,10 @@ export type TranslationPair = {
 };
 
 export type FuseRecord = Pick<TranslationPair, "sourceText" | "targetText">;
+
+export type SourceText = Pick<TranslationPair, "sourceText">;
+
+export type Similarity = {
+  similarityScore: number;
+  sourceText: string;
+};

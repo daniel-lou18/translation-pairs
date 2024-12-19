@@ -1,14 +1,20 @@
 import db from "@/db";
 import { translationPairs } from "@/db/schema";
-import { FuseRecord } from "@/interfaces";
+import { FuseRecord, SourceText } from "@/interfaces";
 
 export async function getAllPairs(): Promise<FuseRecord[]> {
-  const pairs = await db
+  return await db
     .select({
       sourceText: translationPairs.sourceText,
       targetText: translationPairs.targetText,
     })
     .from(translationPairs);
+}
 
-  return pairs;
+export async function getAllSourceText(): Promise<SourceText[]> {
+  return await db
+    .select({
+      sourceText: translationPairs.sourceText,
+    })
+    .from(translationPairs);
 }
