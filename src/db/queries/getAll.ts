@@ -14,6 +14,7 @@ export async function getAllPairs(): Promise<FuseRecord[]> {
 export async function getAllSourceText(): Promise<SourceText[]> {
   return await db
     .select({
+      id: translationPairs.id,
       sourceText: translationPairs.sourceText,
     })
     .from(translationPairs);

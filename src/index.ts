@@ -3,7 +3,7 @@ dotenv.config();
 
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
-import searchRouter from "./routes/searchRoutes";
+import translationsRouter from "./routes/translationsRoutes";
 import { request } from "http";
 
 const PORT = process.env.PORT || 4000;
@@ -13,7 +13,7 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/api/search", searchRouter);
+app.use("/api/translations", translationsRouter);
 
 app.all("*", (req: Request, res: Response) => {
   res
@@ -22,12 +22,10 @@ app.all("*", (req: Request, res: Response) => {
 });
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
-  res
-    .status(500)
-    .json({
-      status: "fail",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
+  res.status(500).json({
+    status: "fail",
+    message: error instanceof Error ? error.message : "Unknown error",
+  });
 });
 
 app.listen(PORT, () => console.log(`Server is listening from port ${PORT}`));
