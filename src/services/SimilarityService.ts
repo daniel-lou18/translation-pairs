@@ -1,34 +1,17 @@
-import { EmbeddingsMap, Similarity, SourceText } from "@/interfaces";
+import { Similarity, TranslationPair } from "@/interfaces";
 import { cos_sim } from "@huggingface/transformers";
 import { EmbeddingsService } from "./EmbeddingsService";
+import { getAllPairs } from "@/db/queries/getAll";
 
 // Use OOP for services
 
 export class SimilarityService {
-  private cachedSourceArray: SourceText[] = [];
-  private embeddings: EmbeddingsMap = new Map();
+  private cachedPairs: TranslationPair[] | null = null;
 
   constructor(private embeddingsService: EmbeddingsService) {}
 
-  public async loadSourceEmbeddings(
-    docs: SourceText[]
-  ): Promise<Map<string, number[]>> {
-    this.cachedSourceArray = docs;
-
-    for (const doc of this.cachedSourceArray) {
-      const [embedding] = await this.embeddingsService.createEmbeddings([
-        doc.sourceText,
-      ]);
-      this.embeddings.set(doc.sourceText, embedding);
-    }
-
-    return this.embeddings;
-  }
-
-  public async storeSourceEmbeddings(
-    updateEmbeddings: (embeddings: EmbeddingsMap) => Promise<any>
-  ) {
-    await updateEmbeddings(this.embeddings);
+  private async fetchAllPairs(getAllPairs: () => Promise<TranslationPair[]>) {
+    return await getAllPairs();
   }
 
   private sort(similarities: Similarity[]) {
@@ -37,19 +20,19 @@ export class SimilarityService {
   }
 
   public async search(searchTerms: string) {
+    if (this.cachedPairs === null) {
+      this.cachedPairs = await this.fetchAllPairs(getAllPairs);
+    }
+
     const [searchTermsEmbedding] =
       await this.embeddingsService.createEmbeddings([searchTerms]);
 
-    const similarities = this.cachedSourceArray.map((source) => ({
-      ...source,
-      similarityScore: cos_sim(
-        searchTermsEmbedding,
-        this.embeddings.get(source.sourceText)!
-      ),
+    const similarities = this.cachedPairs.map((source) => ({
+      sourceText: source.sourceText,
+      targetText: source.targetText,
+      similarityScore: cos_sim(searchTermsEmbedding, source.embedding!),
     }));
 
-    const sortedResults = this.sort(similarities);
-
-    return sortedResults;
+    return this.sort(similarities);
   }
 }

@@ -1,41 +1,13 @@
-import { getAllPairs, getAllSourceText } from "@/db/queries/getAll";
+import { getAllSourceText } from "@/db/queries/getAll";
 import { updateSourceEmbeddings } from "@/db/queries/update";
 import { EmbeddingsService } from "@/services/EmbeddingsService";
-import FuzzySearchService from "@/services/FuzzySearchService";
 import SimilarityPipeline from "@/services/SimilarityPipeline";
-import { SimilarityService } from "@/services/SimilarityService";
+import { TranslationsService } from "@/services/TranslationsService";
 import { NextFunction, Request, Response } from "express";
-
-export async function fuzzySearch(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { searchTerms } = req.body;
-    console.log(searchTerms);
-
-    if (!searchTerms || searchTerms?.length === 0) {
-      throw new Error("Did not receive any searchterms");
-    }
-
-    const fuzzySearchService = await FuzzySearchService.init(getAllPairs);
-    const data = fuzzySearchService.search(searchTerms);
-
-    res.status(200).json({ status: "success", data });
-  } catch (error: unknown) {
-    console.error(
-      "Search controller error: ",
-      error instanceof Error ? error.message : "Unknown error"
-    );
-
-    next(error);
-  }
-}
 
 export default class TranslationsController {
   private static instance: TranslationsController | null = null;
-  private similarityService: SimilarityService | null = null;
+  private translationsService: TranslationsService | null = null;
 
   public static async getInstance() {
     if (this.instance === null) {
@@ -49,18 +21,18 @@ export default class TranslationsController {
   private async init() {
     const similarityPipeline = await SimilarityPipeline.getInstance();
     const embeddingsService = new EmbeddingsService(similarityPipeline);
-    this.similarityService = new SimilarityService(embeddingsService);
+    this.translationsService = new TranslationsService(embeddingsService);
   }
 
   async loadSourceEmbeddings(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!this.similarityService) {
+      if (!this.translationsService) {
         throw new Error("Similarity service is not initialized");
       }
 
       const textArray = await getAllSourceText();
       const output =
-        await this.similarityService.loadSourceEmbeddings(textArray);
+        await this.translationsService.loadSourceEmbeddings(textArray);
       const embeddingsCount = output.size;
 
       res.status(201).json({
@@ -79,11 +51,11 @@ export default class TranslationsController {
 
   async storeSourceEmbeddings(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!this.similarityService) {
+      if (!this.translationsService) {
         throw new Error("Similarity service is not initialized");
       }
 
-      await this.similarityService.storeSourceEmbeddings(
+      await this.translationsService.storeSourceEmbeddings(
         updateSourceEmbeddings
       );
 
@@ -94,32 +66,6 @@ export default class TranslationsController {
     } catch (error) {
       console.error(
         "Error while storing embeddings: ",
-        error instanceof Error ? error.message : "Unknown error"
-      );
-
-      next(error);
-    }
-  }
-
-  async search(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { searchTerms } = req.body;
-      console.log(searchTerms);
-
-      if (!searchTerms || searchTerms?.length === 0) {
-        throw new Error("Did not receive any searchterms");
-      }
-
-      if (!this.similarityService) {
-        throw new Error("Similarity service is not initialized");
-      }
-
-      const data = await this.similarityService.search(searchTerms);
-
-      res.status(200).json({ status: "success", data });
-    } catch (error) {
-      console.error(
-        "Search error: ",
         error instanceof Error ? error.message : "Unknown error"
       );
 

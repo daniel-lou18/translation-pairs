@@ -13,6 +13,8 @@ class SimilarityPipeline {
 
   public static async getInstance() {
     if (this.instance === null) {
+      console.log("Initiating pipeline ...");
+
       this.instance = await pipeline(
         SimilarityPipeline.task as PipelineType,
         SimilarityPipeline.model,
@@ -20,6 +22,8 @@ class SimilarityPipeline {
           progress_callback: undefined,
         }
       );
+
+      console.log("Pipeline successfully initiated");
     }
 
     return this.instance as FeatureExtractionPipeline;

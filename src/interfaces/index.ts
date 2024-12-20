@@ -1,11 +1,13 @@
 export type TranslationPair = {
+  id: number;
   sourceText: string;
   targetText: string;
   sourceLang: string;
   targetLang: string;
-  domain?: string;
-  subdomain?: string;
-  docType?: string;
+  domain: string | null;
+  subdomain: string | null;
+  docType: string | null;
+  embedding: number[] | null;
 };
 
 export type FuseRecord = Pick<TranslationPair, "sourceText" | "targetText">;

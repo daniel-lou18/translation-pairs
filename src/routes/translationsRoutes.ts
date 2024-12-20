@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
 import TranslationsController from "@/controllers/translationsController";
+import SearchController from "@/controllers/searchController";
 
 const router = Router();
 
-function controllerInstanceWrapper(
+function TranslationsControllerWrapper(
   handler: (controller: TranslationsController) => any
 ) {
   return async function (req: Request, res: Response, next: NextFunction) {
@@ -12,11 +13,20 @@ function controllerInstanceWrapper(
   };
 }
 
+function SearchControllerWrapper(
+  handler: (controller: SearchController) => any
+) {
+  return async function (req: Request, res: Response, next: NextFunction) {
+    const controllerInstance = await SearchController.getInstance();
+    return handler(controllerInstance)(req, res, next);
+  };
+}
+
 router.route("/search").get(
-  controllerInstanceWrapper(
-    (TranslationsController) =>
+  SearchControllerWrapper(
+    (SearchController) =>
       async (req: Request, res: Response, next: NextFunction) => {
-        await TranslationsController.search(req, res, next);
+        await SearchController.search(req, res, next);
       }
   )
 );
@@ -24,7 +34,7 @@ router.route("/search").get(
 router
   .route("/embeddings")
   .get(
-    controllerInstanceWrapper(
+    TranslationsControllerWrapper(
       (TranslationsController) =>
         async (req: Request, res: Response, next: NextFunction) => {
           await TranslationsController.loadSourceEmbeddings(req, res, next);
@@ -32,7 +42,7 @@ router
     )
   )
   .post(
-    controllerInstanceWrapper(
+    TranslationsControllerWrapper(
       (TranslationsController) =>
         async (req: Request, res: Response, next: NextFunction) => {
           await TranslationsController.storeSourceEmbeddings(req, res, next);
