@@ -22,7 +22,7 @@ function SearchControllerWrapper(
   };
 }
 
-router.route("/search").get(
+router.route("/search").post(
   SearchControllerWrapper(
     (SearchController) =>
       async (req: Request, res: Response, next: NextFunction) => {

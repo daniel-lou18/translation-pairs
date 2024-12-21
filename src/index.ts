@@ -4,12 +4,13 @@ dotenv.config();
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import translationsRouter from "./routes/translationsRoutes";
-import { request } from "http";
+import cors from "cors";
 
 const PORT = process.env.PORT || 4000;
 
 const app = express();
 
+app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 

@@ -17,16 +17,16 @@ export class SimilarityService {
     return similarities.slice(0, 5);
   }
 
-  async search(sourceTexts: string[]) {
+  async search(queryTexts: string[]) {
     if (this.cachedPairs === null) {
       console.log("Caching pairs...");
       this.cachedPairs = await this.fetchAllPairs(getAllPairs);
     }
 
     const textEmbeddings =
-      await this.embeddingsService.createEmbeddings(sourceTexts);
+      await this.embeddingsService.createEmbeddings(queryTexts);
 
-    const results = sourceTexts.map((sourceText, idx) => {
+    const results = queryTexts.map((queryText, idx) => {
       const textEmbedding = textEmbeddings[idx];
 
       const similarities = this.cachedPairs!.map((source) => ({
@@ -35,7 +35,7 @@ export class SimilarityService {
         similarityScore: cos_sim(textEmbedding, source.embedding!),
       }));
 
-      return { sourceText, topMatches: this.sort(similarities) };
+      return { queryText, matches: this.sort(similarities) };
     });
 
     return results;
