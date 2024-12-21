@@ -28,4 +28,4 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.listen(PORT, () => console.log(`Server is listening from port ${PORT}`));
+app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));

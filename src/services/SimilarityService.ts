@@ -3,8 +3,6 @@ import { cos_sim } from "@huggingface/transformers";
 import { EmbeddingsService } from "./EmbeddingsService";
 import { getAllPairs } from "@/db/queries/getAll";
 
-// Use OOP for services
-
 export class SimilarityService {
   private cachedPairs: TranslationPair[] | null = null;
 
@@ -16,23 +14,30 @@ export class SimilarityService {
 
   private sort(similarities: Similarity[]) {
     similarities.sort((a, b) => b.similarityScore - a.similarityScore);
-    return similarities.slice(0, 10);
+    return similarities.slice(0, 5);
   }
 
-  public async search(searchTerms: string) {
+  async search(sourceTexts: string[]) {
     if (this.cachedPairs === null) {
+      console.log("Caching pairs...");
       this.cachedPairs = await this.fetchAllPairs(getAllPairs);
     }
 
-    const [searchTermsEmbedding] =
-      await this.embeddingsService.createEmbeddings([searchTerms]);
+    const textEmbeddings =
+      await this.embeddingsService.createEmbeddings(sourceTexts);
 
-    const similarities = this.cachedPairs.map((source) => ({
-      sourceText: source.sourceText,
-      targetText: source.targetText,
-      similarityScore: cos_sim(searchTermsEmbedding, source.embedding!),
-    }));
+    const results = sourceTexts.map((sourceText, idx) => {
+      const textEmbedding = textEmbeddings[idx];
 
-    return this.sort(similarities);
+      const similarities = this.cachedPairs!.map((source) => ({
+        sourceText: source.sourceText,
+        targetText: source.targetText,
+        similarityScore: cos_sim(textEmbedding, source.embedding!),
+      }));
+
+      return { sourceText, topMatches: this.sort(similarities) };
+    });
+
+    return results;
   }
 }

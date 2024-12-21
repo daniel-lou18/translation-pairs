@@ -36,7 +36,7 @@ export default class SearchController {
   private static instance: SearchController | null = null;
   private similarityService: SimilarityService | null = null;
 
-  public static async getInstance() {
+  static async getInstance() {
     if (this.instance === null) {
       this.instance = new SearchController();
       await this.instance.init();
@@ -53,7 +53,7 @@ export default class SearchController {
 
   async search(req: Request, res: Response, next: NextFunction) {
     try {
-      const { searchTerms } = req.body;
+      const { searchTerms }: { searchTerms: string[] } = req.body;
       console.log(searchTerms);
 
       if (!searchTerms || searchTerms?.length === 0) {

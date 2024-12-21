@@ -4,14 +4,12 @@ import {
   PipelineType,
 } from "@huggingface/transformers";
 
-// Use OOP for services
-
 class SimilarityPipeline {
   private static task = "feature-extraction";
   private static model = "mixedbread-ai/mxbai-embed-large-v1";
   private static instance: any | null = null;
 
-  public static async getInstance() {
+  static async getInstance() {
     if (this.instance === null) {
       console.log("Initiating pipeline ...");
 
