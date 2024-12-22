@@ -2,12 +2,12 @@ import { getAllSourceText } from "@/db/queries/getAll";
 import { updateSourceEmbeddings } from "@/db/queries/update";
 import { EmbeddingsService } from "@/services/EmbeddingsService";
 import SimilarityPipeline from "@/services/SimilarityPipeline";
-import { TranslationsService } from "@/services/TranslationsService";
+import TranslationMemoryService from "@/services/TranslationMemoryService";
 import { NextFunction, Request, Response } from "express";
 
 export default class TranslationsController {
   private static instance: TranslationsController | null = null;
-  private translationsService: TranslationsService | null = null;
+  private translationsService: TranslationMemoryService | null = null;
 
   public static async getInstance() {
     if (this.instance === null) {
@@ -21,7 +21,7 @@ export default class TranslationsController {
   private async init() {
     const similarityPipeline = await SimilarityPipeline.getInstance();
     const embeddingsService = new EmbeddingsService(similarityPipeline);
-    this.translationsService = new TranslationsService(embeddingsService);
+    this.translationsService = new TranslationMemoryService(embeddingsService);
   }
 
   async loadSourceEmbeddings(req: Request, res: Response, next: NextFunction) {

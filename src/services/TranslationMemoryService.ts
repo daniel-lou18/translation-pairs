@@ -1,7 +1,7 @@
 import { EmbeddingsMap, SourceText } from "@/interfaces";
 import { EmbeddingsService } from "./EmbeddingsService";
 
-export class TranslationsService {
+export default class TranslationMemoryService {
   private cachedSourceArray: SourceText[] = [];
   private embeddings: EmbeddingsMap = new Map();
 

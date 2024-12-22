@@ -1,14 +1,15 @@
 import { NextFunction, Request, Response, Router } from "express";
-import TranslationsController from "@/controllers/translationsController";
+import TranslationMemoryController from "@/controllers/translationMemoryController";
 import SearchController from "@/controllers/searchController";
+import { translateController } from "@/controllers/translateController";
 
 const router = Router();
 
-function TranslationsControllerWrapper(
-  handler: (controller: TranslationsController) => any
+function TranslationMemoryControllerWrapper(
+  handler: (controller: TranslationMemoryController) => any
 ) {
   return async function (req: Request, res: Response, next: NextFunction) {
-    const controllerInstance = await TranslationsController.getInstance();
+    const controllerInstance = await TranslationMemoryController.getInstance();
     return handler(controllerInstance)(req, res, next);
   };
 }
@@ -22,6 +23,8 @@ function SearchControllerWrapper(
   };
 }
 
+router.route("/translate").post(translateController.translate);
+
 router.route("/search").post(
   SearchControllerWrapper(
     (SearchController) =>
@@ -34,18 +37,26 @@ router.route("/search").post(
 router
   .route("/embeddings")
   .get(
-    TranslationsControllerWrapper(
-      (TranslationsController) =>
+    TranslationMemoryControllerWrapper(
+      (TranslationMemoryController) =>
         async (req: Request, res: Response, next: NextFunction) => {
-          await TranslationsController.loadSourceEmbeddings(req, res, next);
+          await TranslationMemoryController.loadSourceEmbeddings(
+            req,
+            res,
+            next
+          );
         }
     )
   )
   .post(
-    TranslationsControllerWrapper(
-      (TranslationsController) =>
+    TranslationMemoryControllerWrapper(
+      (TranslationMemoryController) =>
         async (req: Request, res: Response, next: NextFunction) => {
-          await TranslationsController.storeSourceEmbeddings(req, res, next);
+          await TranslationMemoryController.storeSourceEmbeddings(
+            req,
+            res,
+            next
+          );
         }
     )
   );
