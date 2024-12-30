@@ -20,3 +20,14 @@ export type Similarity = {
 };
 
 export type EmbeddingsMap = Map<string, number[]>;
+
+export type Match = {
+  sourceText: string;
+  targetText: string;
+  similarityScore: number;
+};
+
+export type TranslationMatch = {
+  queryText: string;
+  matches: Match[];
+};

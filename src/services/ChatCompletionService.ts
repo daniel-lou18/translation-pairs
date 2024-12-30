@@ -1,23 +1,18 @@
 import OpenAI from "openai";
-import { ChatCompletionSystemMessageParam } from "openai/resources";
+import {
+  ChatCompletionMessageParam,
+  ChatCompletionSystemMessageParam,
+} from "openai/resources";
 
 type ChatCompletionConfig = {
   model: string;
   temperature: number;
-  messages: ChatCompletionSystemMessageParam[];
 };
 
 export default class ChatCompletionService {
   private config: ChatCompletionConfig = {
     model: "gpt-4o-mini",
     temperature: 0.7,
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a legal translator translating legal documents from Dutch to French.",
-      },
-    ],
   };
 
   constructor(
@@ -27,17 +22,12 @@ export default class ChatCompletionService {
     this.config = { ...this.config, ...config };
   }
 
-  async getTranslation(prompt: string) {
+  async getTranslation(prompt: ChatCompletionMessageParam[]) {
+    console.log(prompt);
     const result = await this.openAiClient.chat.completions.create({
       model: this.config.model,
-      messages: [
-        ...this.config.messages,
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
       temperature: this.config.temperature,
+      messages: prompt,
     });
 
     return result.choices[0].message.content;

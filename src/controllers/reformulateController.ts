@@ -4,17 +4,17 @@ import ChatCompletionService, {
 import promptService from "@/services/PromptService";
 import { NextFunction, Request, Response } from "express";
 
-export default class TranslateController {
+export default class ReformulateController {
   constructor(private chatCompletionService: ChatCompletionService) {}
 
   // use arrow function to bind this to class instance: it can be safely called as a callback function in the router
 
-  translate = async (req: Request, res: Response, next: NextFunction) => {
+  reformulate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { sourceSegment, examples } = req.body;
+      const { translatedText, examples } = req.body;
 
-      const prompt = promptService.createTranslationPrompt(
-        sourceSegment,
+      const prompt = promptService.createReformulationPrompt(
+        translatedText,
         examples
       );
       const data = await this.chatCompletionService.getTranslation(prompt);
@@ -34,6 +34,6 @@ export default class TranslateController {
   };
 }
 
-export const translateController = new TranslateController(
+export const reformulateController = new ReformulateController(
   chatCompletionService
 );

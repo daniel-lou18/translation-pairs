@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import TranslationMemoryController from "@/controllers/translationMemoryController";
 import SearchController from "@/controllers/searchController";
 import { translateController } from "@/controllers/translateController";
+import { reformulateController } from "@/controllers/reformulateController";
 
 const router = Router();
 
@@ -24,6 +25,7 @@ function SearchControllerWrapper(
 }
 
 router.route("/translate").post(translateController.translate);
+router.route("/reformulate").post(reformulateController.reformulate);
 
 router.route("/search").post(
   SearchControllerWrapper(
